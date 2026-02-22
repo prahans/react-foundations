@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './App.css'
+import Counter from './Counter';
 const messages = [
   "Learn React ⚛️",
   "Apply for jobs 💼",
@@ -11,6 +12,8 @@ function App(){
   <Steps/>
   <hr></hr>
   <Steps/>
+  <hr></hr>
+  <Counter/>
   </div>
   
 }

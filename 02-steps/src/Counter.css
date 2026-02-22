@@ -1,0 +1,11 @@
+*{
+    text-align: center;
+}
+.counterSteps{
+    display: flex;
+    justify-content: center;
+}
+.counterSteps button {
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
