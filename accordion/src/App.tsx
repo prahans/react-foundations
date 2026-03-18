@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './App.css';
+import TipCalculator from './TipCalculator';
 
 const faqs = [
   {
@@ -23,6 +24,7 @@ function App() {
   return (
     <div>
       <Accordion data={faqs} />
+      <TipCalculator/>
     </div>
   );
 }
