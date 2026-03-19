@@ -1,1 +1,2 @@
 # react-foundations
+The React Foundation is a community-driven initiative dedicated to sustaining and advancing the React ecosystem. Join thousands of contributors who code, teach, organize, and support the tools millions of developers rely on.

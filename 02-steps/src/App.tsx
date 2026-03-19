@@ -15,7 +15,6 @@ function App(){
   <hr></hr>
   <Counter/>
   </div>
-  
 }
 
 function Steps() {

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import TodoApp from './TodoApp';
 import './App.css'
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
     <p>{count}</p>
     <button onClick={handleDec}>decrease Count</button>
     </div>
+    <TodoApp/>
     </>
   )
 }
