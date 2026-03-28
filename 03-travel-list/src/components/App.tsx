@@ -1,4 +1,4 @@
-import './App.css'
+import './App.css';
 import  { useState } from 'react';
 import Logo from './Logo';
 import Form from './Form';
