@@ -59,7 +59,12 @@ export default function App() {
         <Search />
         <NumResult movies={movies}/>
       </NavBar>
-      <Main movies={movies} />
+      <Main>
+        <ListBox>
+          <MovieList movies={movies}/>
+        </ListBox>
+        <WatchedBox />
+      </Main>
     </>
   );
 }
@@ -96,10 +101,9 @@ function NumResult({movies}: {movies: MoviesType}){
         </p>
 }
 
-function Main({movies}: {movies: MoviesType}){
+function Main({children}: {children: React.ReactNode}){
   return <main className="main">
-    <ListBox movies={movies}/>
-    <WatchedBox />
+    {children}
     </main>
 }
 
@@ -125,7 +129,7 @@ type Movie = {
 type MoviesType = Movie[];
 
 
-function ListBox({movies}: {movies: MoviesType}){
+function ListBox({children}: {children: React.ReactNode}){
   const [isOpen1, setIsOpen1] = useState(true);
   
   return <div className="box">
@@ -136,7 +140,7 @@ function ListBox({movies}: {movies: MoviesType}){
             {isOpen1 ? "–" : "+"}
           </button>
           {isOpen1 && (
-            <MovieList movies={movies}/>
+            children
           )}
         </div>
 }
