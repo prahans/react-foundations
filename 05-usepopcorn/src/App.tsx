@@ -55,18 +55,20 @@ export default function App() {
  const [movies, setMovies] = useState(tempMovieData);
   return (
     <>
-      <NavBar movies={movies}/>
+      <NavBar>
+        <Search />
+        <NumResult movies={movies}/>
+      </NavBar>
       <Main movies={movies} />
     </>
   );
 }
 
-function NavBar({movies}: {movies: MoviesType}){
+function NavBar({children}: {children: React.ReactNode}){
   
   return <nav className="nav-bar">
     <Logo />
-    <Search />
-    <NumResult movies={movies}/>
+    {children}
     </nav>
 }
 
