@@ -1,25 +1,9 @@
 import { useState } from 'react';
-import TodoApp from './TodoApp';
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0);
-  function handleInc(){
-    setCount(count + 1);
-  }
-  function handleDec(){
-    setCount(count - 1);
-  }
-
-
   return (<>
     <FlashCards/>
-    <div style={{display: 'flex'}}>
-    <button onClick={handleInc}>increase Count</button>
-    <p>{count}</p>
-    <button onClick={handleDec}>decrease Count</button>
-    </div>
-    <TodoApp/>
     </>
   )
 }
