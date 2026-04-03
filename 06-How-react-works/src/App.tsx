@@ -47,13 +47,14 @@ function Tabbed({ content }: {content: contents}) {
       </div>
 
       {activeTab <= 2 ? (
-        <TabContent item={content[activeTab]} />
+        <TabContent item={content[activeTab]} key={content[activeTab].summary} />
       ) : (
         <DifferentContent />
       )}
     </div>
   );
 }
+
 
 function Tab({ num, activeTab, onClick }: {num: number, activeTab: number, onClick: React.Dispatch<React.SetStateAction<number>> }) {
   return (
@@ -74,6 +75,21 @@ function TabContent({ item }: {item: content}) {
     setLikes(likes + 1);
   }
 
+  function handleUndo(){
+    setLikes(0);
+    setShowDetails(true);
+  }
+
+  function handleTripleInc(){
+    setLikes(likes => likes + 1);
+    setLikes(likes => likes + 1);
+    setLikes(likes => likes + 1);
+  }
+
+  function handleUndoLater(){
+    setTimeout(handleUndo, 2000);
+  }
+
   return (
     <div className="tab-content">
       <h4>{item.summary}</h4>
@@ -87,13 +103,13 @@ function TabContent({ item }: {item: content}) {
         <div className="hearts-counter">
           <span>{likes} ❤️</span>
           <button onClick={handleInc}>+</button>
-          <button>+++</button>
+          <button onClick={handleTripleInc}>+++</button>
         </div>
       </div>
 
       <div className="tab-undo">
-        <button>Undo</button>
-        <button>Undo in 2s</button>
+        <button onClick={handleUndo}>Undo</button>
+        <button onClick={handleUndoLater}>Undo in 2s</button>
       </div>
     </div>
   );
