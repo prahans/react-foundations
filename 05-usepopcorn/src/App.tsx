@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, type ReactEventHandler } from "react";
 import './App.css';
 
 const tempMovieData = [
@@ -51,19 +51,58 @@ const tempWatchedData = [
 const average = (arr: number[]): number =>
   arr.length === 0 ? 0 : arr.reduce((a, b) => a + b, 0) / arr.length;
 
+const KEY = "39897733";
+
 export default function App() {
- const [movies, setMovies] = useState(tempMovieData);
- const [watched, setWatched] = useState(tempWatchedData);  
+ const [query, setQuery] = useState("avenger");
+ const [movies, setMovies] = useState([]);
+ const [watched, setWatched] = useState([]);  
+ const [isLoading, setIsLoading] = useState(false);
+ const [error , setError] = useState("");
+
+useEffect(function(){
+  async function fetchMovies(){
+  setIsLoading(true);
+  setError("");
+  const res = await fetch(`https://www.omdbapi.com/?apikey=${KEY}&s=${query}`);
+  try{
+    if(!res.ok) throw new Error("something went wrong with fetching movies");
+    const data = await res.json();
+    if(data.Response === "False") throw new Error("Movie not Found");
+
+    setMovies(data.Search);
+  }catch(err: unknown){
+    if (err instanceof Error) {
+    console.log(err.message);
+    setError(err.message);
+  } else {
+    console.log("Unknown error");
+    setError("Something went wrong");
+  }
+  }finally{
+    setIsLoading(false)
+  }
+ }
+ if(query.length < 3){
+  setError("");
+  setMovies([]);
+  return;
+ }
+
+ fetchMovies();
+}, [query]);
 
   return (
     <>
       <NavBar>
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResult movies={movies}/>
       </NavBar>
       <Main>
         <Box>
-          <MovieList movies={movies}/>
+          {!isLoading && !error && <MovieList movies={movies} />}
+          {isLoading && !error && <Loader />}
+          {error && <ErrorMessage msg={error} />}
         </Box>
         <Box>
           <WatchedSummary watched={watched}/>
@@ -72,6 +111,16 @@ export default function App() {
       </Main>
     </>
   );
+}
+
+function ErrorMessage({msg}: {msg: string}){
+  return <p className="error">
+    <span>⛔</span>{msg}
+  </p>
+}
+
+function Loader(){
+  return <p className="loader">Loading...</p>
 }
 
 function NavBar({children}: {children: React.ReactNode}){
@@ -89,8 +138,8 @@ function Logo(){
         </div>
 }
 
-function Search(){
-  const [query, setQuery] = useState("");
+function Search({query, setQuery}: {query: string, setQuery: React.Dispatch<React.SetStateAction<string>> }){
+  
   return <input
           className="search"
           type="text"
@@ -154,7 +203,7 @@ function MovieList({movies}: {movies: MoviesType}){
  
   return <ul className="list">
               {movies?.map((movie) => (
-                <Movie movie={movie}/>
+                <Movie movie={movie} key={movie.imdbID}/>
               ))}
             </ul>
 }
@@ -226,7 +275,7 @@ function WatchedSummary({watched}: {watched: watched}){
 function WatchedMoviesList({watched}: {watched: watched}){
   return <ul className="list">
                 {watched.map((movie) => (
-                  <WatchedMovie movie={movie} />
+                  <WatchedMovie movie={movie} key={movie.imdbID} />
                 ))}
               </ul>
 }
