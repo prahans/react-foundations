@@ -1,5 +1,6 @@
-import { useEffect, useState, type ReactEventHandler } from "react";
+import { useEffect, useState } from "react";
 import './App.css';
+import StarRating from "./StarRating";
 
 const tempMovieData = [
   {
@@ -48,6 +49,7 @@ const tempWatchedData = [
   },
 ];
 
+
 const average = (arr: number[]): number =>
   arr.length === 0 ? 0 : arr.reduce((a, b) => a + b, 0) / arr.length;
 
@@ -56,9 +58,25 @@ const KEY = "39897733";
 export default function App() {
  const [query, setQuery] = useState("avenger");
  const [movies, setMovies] = useState([]);
- const [watched, setWatched] = useState([]);  
+ const [watched, setWatched] = useState<WatchedMovie[]>([]); 
  const [isLoading, setIsLoading] = useState(false);
  const [error , setError] = useState("");
+ const [selectedId, setSelectedId] = useState("tt0458339");
+
+ function handleAddWatched(movie: WatchedMovie) {
+  setWatched((watched) => [...watched, movie]);
+}
+
+
+type WatchedMovie = {
+  imdbID: string;
+  title: string;
+  year: string;
+  poster: string;
+  imdbRating: number;
+  runtime: number;
+  userRating: number; 
+};
 
 useEffect(function(){
   async function fetchMovies(){
@@ -92,6 +110,15 @@ useEffect(function(){
  fetchMovies();
 }, [query]);
 
+function handleCloseMovie(){
+  setSelectedId("");
+}
+
+
+function handleSelectMovie(id : string){
+  setSelectedId(() => selectedId !== id ? id : "" )
+}
+
   return (
     <>
       <NavBar>
@@ -100,17 +127,110 @@ useEffect(function(){
       </NavBar>
       <Main>
         <Box>
-          {!isLoading && !error && <MovieList movies={movies} />}
+          {!isLoading && !error && <MovieList movies={movies} handleSelectMovie={handleSelectMovie} />}
           {isLoading && !error && <Loader />}
           {error && <ErrorMessage msg={error} />}
         </Box>
         <Box>
+          { selectedId ? <MovieDetails selectedId={selectedId} handleCloseMovie={handleCloseMovie} handleAddWatched={handleAddWatched}/> :
+          <>
           <WatchedSummary watched={watched}/>
           <WatchedMoviesList watched={watched} />
+          </>
+          }
         </Box>
       </Main>
     </>
   );
+}
+
+function MovieDetails({selectedId, handleCloseMovie, handleAddWatched}: {selectedId: string, handleCloseMovie(): void, handleAddWatched(movie): void}){
+  const [movie, setMovie] = useState<movieType>();
+  const [isLoading, setIsLoading] = useState(false);
+
+  function handleAdd(){
+    const newWatchedMovie = {
+      imdbID: selectedId,
+      title,
+      year,
+      poster,
+      imdbRating: Number(imdbRating),
+      runtime: Number(runtime.split(" ").at(0)),
+    }
+
+    handleAddWatched(newWatchedMovie);
+  }
+
+  type movieType = {
+  Title: string;
+  Poster: string;
+  Year: string;
+  Runtime: string;      
+  imdbRating: string;   
+  Plot: string;
+  Released: string;     
+  Actors: string;
+  Director: string;
+  Genre: string;
+};
+
+
+
+  useEffect(function(){
+    async function getMovieDetails(){
+      setIsLoading(true);
+      const res = await fetch(`https://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`);
+
+      const data = await res.json();
+      setMovie(data);
+      setIsLoading(false);
+    }
+
+    getMovieDetails();
+  }, [selectedId])
+
+  if (!movie) return <p>Loading...</p>;
+
+  const {
+    Title: title,
+    Poster: poster,
+    Year: year,
+    Runtime: runtime,
+    imdbRating: imdbRating,
+    Plot: plot,
+    Released: released,
+    Actors: actors,
+    Director: director,
+    Genre: genre
+  } = movie;                                          
+
+  return <div className="details">
+    {isLoading ? <Loader /> :
+    <>
+    <header>
+    <button className="btn-back" onClick={handleCloseMovie}>&larr;</button>
+    <img src={poster} alt={`poster of ${title}`} />
+    <div className="details-overview">
+      <h2>{title}</h2>
+      <p>{released}  &bull; {runtime}</p>
+      <p>{genre}</p>
+      <p><span>⭐</span> {imdbRating} IMDb rating</p>
+    </div>
+    </header>
+    <section>
+      <div className="rating">
+      <StarRating maxStar={10} size={24} />
+      <button className="btn-add" onClick={() => handleAdd()}>+ Add to list</button>
+      </div>
+      <p>
+        <em>{plot}</em>
+      </p>
+      <p>Starring {actors}</p>
+      <p>Directed by {director}</p>
+    </section>
+    </>
+    }
+    </div>
 }
 
 function ErrorMessage({msg}: {msg: string}){
@@ -124,7 +244,6 @@ function Loader(){
 }
 
 function NavBar({children}: {children: React.ReactNode}){
-  
   return <nav className="nav-bar">
     <Logo />
     {children}
@@ -199,17 +318,17 @@ function Box({children}: {children: React.ReactNode}){
         </div>
 }
 
-function MovieList({movies}: {movies: MoviesType}){
+function MovieList({movies, handleSelectMovie}: {movies: MoviesType, handleSelectMovie(id: string): void }){
  
-  return <ul className="list">
+  return <ul className="list list-movies">
               {movies?.map((movie) => (
-                <Movie movie={movie} key={movie.imdbID}/>
+                <Movie movie={movie} key={movie.imdbID} handleSelectMovie={handleSelectMovie} />
               ))}
             </ul>
 }
 
-function Movie({movie}: {movie : Movie}){
-  return <li key={movie.imdbID}>
+function Movie({movie, handleSelectMovie}: {movie : Movie, handleSelectMovie(id: string): void}){
+  return <li  key={movie.imdbID} onClick={() => handleSelectMovie(movie.imdbID)}>
                   <img src={movie.Poster} alt={`${movie.Title} poster`} />
                   <h3>{movie.Title}</h3>
                   <div>
@@ -282,9 +401,9 @@ function WatchedMoviesList({watched}: {watched: watched}){
 
 type watchedMovie = {
     imdbID: string;
-    Title: string;
-    Year: string;
-    Poster: string;
+    title: string;
+    year: string;
+    poster: string;
     runtime: number;
     imdbRating: number;
     userRating: number;
@@ -292,8 +411,8 @@ type watchedMovie = {
 
 function WatchedMovie({movie}: {movie: watchedMovie}){
   return <li key={movie.imdbID}>
-                    <img src={movie.Poster} alt={`${movie.Title} poster`} />
-                    <h3>{movie.Title}</h3>
+                    <img src={movie.poster} alt={`${movie.title} poster`} />
+                    <h3>{movie.title}</h3>
                     <div>
                       <p>
                         <span>⭐️</span>
