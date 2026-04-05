@@ -86,7 +86,7 @@ const average = (arr: number[]): number =>
 const KEY = "39897733";
 
 export default function App() {
- const [query, setQuery] = useState("avenger");
+ const [query, setQuery] = useState("                     ");
  const [movies, setMovies] = useState([]);
  const [watched, setWatched] = useState<WatchedMovie[]>([]); 
  const [isLoading, setIsLoading] = useState(false);
@@ -98,6 +98,7 @@ export default function App() {
 }
 
 useEffect(function(){
+  const controller = new AbortController();
   async function fetchMovies(){
   setIsLoading(true);
   setError("");
@@ -106,8 +107,8 @@ useEffect(function(){
     if(!res.ok) throw new Error("something went wrong with fetching movies");
     const data = await res.json();
     if(data.Response === "False") throw new Error("Movie not Found");
-
     setMovies(data.Search);
+    setError("");
   }catch(err: unknown){
     if (err instanceof Error) {
     console.log(err.message);
@@ -126,7 +127,12 @@ useEffect(function(){
   return;
  }
 
+ handleCloseMovie();
  fetchMovies();
+
+ return function () {
+    controller.abort();
+  };
 }, [query]);
 
 function handleCloseMovie(){
@@ -191,6 +197,21 @@ function MovieDetails({selectedId, handleCloseMovie, handleAddWatched, watched}:
     handleCloseMovie();
   }
 
+
+  useEffect(function(){
+    function callBack(e: KeyboardEvent){
+      if(e.code === "Escape"){
+        handleCloseMovie();
+      }
+    }
+
+    document.addEventListener("keydown", callBack);
+
+    return function(){
+      document.removeEventListener("keydown", callBack);
+    }
+
+  }, [handleCloseMovie])
 
   useEffect(function(){
     async function getMovieDetails(){
