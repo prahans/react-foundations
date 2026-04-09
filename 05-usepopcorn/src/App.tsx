@@ -1,53 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type ButtonHTMLAttributes } from "react";
 import './App.css';
 import StarRating from "./StarRating";
-
-// const tempMovieData = [
-//   {
-//     imdbID: "tt1375666",
-//     Title: "Inception",
-//     Year: "2010",
-//     Poster:
-//       "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-//   },
-//   {
-//     imdbID: "tt0133093",
-//     Title: "The Matrix",
-//     Year: "1999",
-//     Poster:
-//       "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg",
-//   },
-//   {
-//     imdbID: "tt6751668",
-//     Title: "Parasite",
-//     Year: "2019",
-//     Poster:
-//       "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg",
-//   },
-// ];
-
-// const tempWatchedData = [
-//   {
-//     imdbID: "tt1375666",
-//     Title: "Inception",
-//     Year: "2010",
-//     Poster:
-//       "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-//     runtime: 148,
-//     imdbRating: 8.8,
-//     userRating: 10,
-//   },
-//   {
-//     imdbID: "tt0088763",
-//     Title: "Back to the Future",
-//     Year: "1985",
-//     Poster:
-//       "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
-//     runtime: 116,
-//     imdbRating: 8.5,
-//     userRating: 9,
-//   },
-// ];
 
 type WatchedMovie = {
   imdbID: string;
@@ -88,11 +41,11 @@ const KEY = "39897733";
 export default function App() {
  const [query, setQuery] = useState("");
  const [movies, setMovies] = useState([]);
- const [watched, setWatched] = useState<WatchedMovie[]>([]); 
  const [isLoading, setIsLoading] = useState(false);
  const [error , setError] = useState("");
- const [selectedId, setSelectedId] = useState("tt0458339");
-
+ const [selectedId, setSelectedId] = useState("");
+ const [watched, setWatched] = useState<WatchedMovie[]>([]); 
+ 
  function handleAddWatched(movie: WatchedMovie) {
   setWatched((watched) => [...watched, movie]);
 }
@@ -308,13 +261,29 @@ function Logo(){
 }
 
 function Search({query, setQuery}: {query: string, setQuery: React.Dispatch<React.SetStateAction<string>> }){
+  const inputEl = useRef(null);
   
+  useEffect(function(){
+    function callback(e:  KeyboardEvent){
+      if(document.activeElement === inputEl.current)
+        return;
+      if(e.code == "Enter"){
+        inputEl.current.focus();
+        setQuery("");
+      }
+    }
+
+    document.addEventListener("keydown", callback);
+    return () => document.addEventListener("keydown", callback);
+  }, [setQuery])
+
   return <input
           className="search"
           type="text"
           placeholder="Search movies..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          ref={inputEl}
         />
 }
 
