@@ -1,6 +1,9 @@
-import { useEffect, useRef, useState, type ButtonHTMLAttributes } from "react";
+import { useEffect, useRef, useState } from "react";
 import './App.css';
 import StarRating from "./StarRating";
+import { useMovies } from "./useMovies";
+import { useLocalStorageState } from "./useLocalStorageState";
+import { useKey } from "./useKey";
 
 type WatchedMovie = {
   imdbID: string;
@@ -14,15 +17,15 @@ type WatchedMovie = {
 
 type Movie = {
   Title: string,
-    Poster: string,
-    Year: string,
-    Runtime: string,
-    imdbRating: string,
-    Plot: string,
-    Released: string,
-    Actors: string,
-    Director: string,
-    Genre: string
+  Poster: string,
+  Year: string,
+  Runtime: string,
+  imdbRating: string,
+  Plot: string,
+  Released: string,
+  Actors: string,
+  Director: string,
+  Genre: string
 }
 
 type MovieList = {
@@ -40,53 +43,20 @@ const KEY = "39897733";
 
 export default function App() {
  const [query, setQuery] = useState("");
- const [movies, setMovies] = useState([]);
- const [isLoading, setIsLoading] = useState(false);
- const [error , setError] = useState("");
  const [selectedId, setSelectedId] = useState("");
- const [watched, setWatched] = useState<WatchedMovie[]>([]); 
+//  const [watched, setWatched] = useState<WatchedMovie[]>([]); 
+
+
+const [watched, setWatched] = useLocalStorageState<WatchedMovie[]>([], "watched");
+ 
+ const {error, movies, isLoading} =  useMovies(query);
  
  function handleAddWatched(movie: WatchedMovie) {
-  setWatched((watched) => [...watched, movie]);
+  setWatched((watched: WatchedMovie[]) => [...watched, movie]);
+  // localStorage.setItem("watched", JSON.stringify([...watched, movie]));
 }
 
-useEffect(function(){
-  const controller = new AbortController();
-  async function fetchMovies(){
-  setIsLoading(true);
-  setError("");
-  const res = await fetch(`https://www.omdbapi.com/?apikey=${KEY}&s=${query}`);
-  try{
-    if(!res.ok) throw new Error("something went wrong with fetching movies");
-    const data = await res.json();
-    if(data.Response === "False") throw new Error("Movie not Found");
-    setMovies(data.Search);
-    setError("");
-  }catch(err: unknown){
-    if (err instanceof Error) {
-    console.log(err.message);
-    setError(err.message);
-  } else {
-    console.log("Unknown error");
-    setError("Something went wrong");
-  }
-  }finally{
-    setIsLoading(false)
-  }
- }
- if(query.length < 3){
-  setError("");
-  setMovies([]);
-  return;
- }
 
- handleCloseMovie();
- fetchMovies();
-
- return function () {
-    controller.abort();
-  };
-}, [query]);
 
 function handleCloseMovie(){
   setSelectedId("");
@@ -98,7 +68,7 @@ function handleSelectMovie(id : string){
 }
 
 function handleDeleteWatched(id: string){
-  setWatched(watched => watched.filter(movie => movie.imdbID !== id));
+  setWatched(watched => watched.filter(movie  => movie.imdbID !== id));
 }
 
   return (
@@ -126,8 +96,6 @@ function handleDeleteWatched(id: string){
   );
 }
 
-
-
 function MovieDetails({selectedId, handleCloseMovie, handleAddWatched, watched}: {selectedId: string, handleCloseMovie(): void, handleAddWatched(movie: WatchedMovie): void, watched: WatchedMovie[]}){
   const [movie, setMovie] = useState<Movie>();
   const [isLoading, setIsLoading] = useState(false);
@@ -151,20 +119,7 @@ function MovieDetails({selectedId, handleCloseMovie, handleAddWatched, watched}:
   }
 
 
-  useEffect(function(){
-    function callBack(e: KeyboardEvent){
-      if(e.code === "Escape"){
-        handleCloseMovie();
-      }
-    }
-
-    document.addEventListener("keydown", callBack);
-
-    return function(){
-      document.removeEventListener("keydown", callBack);
-    }
-
-  }, [handleCloseMovie])
+  useKey("Escape", handleCloseMovie);
 
   useEffect(function(){
     async function getMovieDetails(){
@@ -261,21 +216,14 @@ function Logo(){
 }
 
 function Search({query, setQuery}: {query: string, setQuery: React.Dispatch<React.SetStateAction<string>> }){
-  const inputEl = useRef(null);
-  
-  useEffect(function(){
-    function callback(e:  KeyboardEvent){
-      if(document.activeElement === inputEl.current)
-        return;
-      if(e.code == "Enter"){
-        inputEl.current.focus();
-        setQuery("");
-      }
-    }
+  const inputEl = useRef<HTMLInputElement>(null);
 
-    document.addEventListener("keydown", callback);
-    return () => document.addEventListener("keydown", callback);
-  }, [setQuery])
+  useKey("Enter", function(){
+    if(document.activeElement === inputEl.current) return;
+    inputEl.current?.focus();
+    setQuery("");
+  })
+  
 
   return <input
           className="search"
@@ -382,7 +330,7 @@ function WatchedSummary({watched}: {watched: WatchedMovie[]}){
                   </p>
                   <p>
                     <span>⏳</span>
-                    <span>{avgRuntime} min</span>
+                    <span>{avgRuntime.toFixed(2)} min</span>
                   </p>
                 </div>
               </div>
