@@ -1,4 +1,4 @@
-import './App.css'
+import "./App.css";
 
 const pizzaData = [
   {
@@ -45,96 +45,102 @@ const pizzaData = [
   },
 ];
 
-
 function App() {
-
   return (
     <div>
-      <Header/>
-      <Menu/>
-      <Footer/>
+      <Header />
+      <Menu />
+      <Footer />
     </div>
-  )
+  );
 }
 
-function Header(){
+function Header() {
   // const style = {color: "red", fontSize: "48px", textTransform: "uppercase"}
-  return (<header className='header'>
-       <h1>Fast React Pizza Co.</h1>
-    </header>)
+  return (
+    <header className="header">
+      <h1>Fast React Pizza Co.</h1>
+    </header>
+  );
 }
 
-
-function Menu(){
+function Menu() {
   const pizzas = pizzaData;
   const numPizzas = pizzas.length;
-  return <main className='menu'>
-    <h2>Our menu</h2>
-    {numPizzas > 0 ? (
-      <>
-      <p>
+  return (
+    <main className="menu">
+      <h2>Our menu</h2>
+      {numPizzas > 0 ? (
+        <>
+          <p>
             Authentic Italian cuisine. 6 creative dishes to choose from. All
             from our stone oven, all organic, all delicious.
-      </p>
-      <ul className='pizzas'>
-      {
-        pizzaData.map((pizza) => (
-          <Pizza pizzaObj={pizza} key={pizza.name}/>
-        ))
-      }
-    </ul> 
-    </>)
-    : <p>We're still working on our menu. Please come back later :)</p>
-    }
-  </main>
+          </p>
+          <ul className="pizzas">
+            {pizzaData.map((pizza) => (
+              <Pizza pizzaObj={pizza} key={pizza.name} />
+            ))}
+          </ul>
+        </>
+      ) : (
+        <p>We're still working on our menu. Please come back later :)</p>
+      )}
+    </main>
+  );
 }
 
 type PizzaType = {
   pizzaObj: {
-    photoName: string,
-   name: string,
-  ingredients: string,
-  price: number,
-  soldOut: boolean
-  }
+    photoName: string;
+    name: string;
+    ingredients: string;
+    price: number;
+    soldOut: boolean;
+  };
+};
+
+function Pizza({
+  pizzaObj: { photoName, name, ingredients, price, soldOut },
+}: PizzaType) {
+  return (
+    <li className={`pizza ${soldOut && "sold-out"}`}>
+      <img src={photoName} alt="pizza"></img>
+      <div>
+        <h3>{name}</h3>
+        <p>{ingredients}</p>
+        <span>{soldOut ? "SOLD OUT" : price}</span>
+      </div>
+    </li>
+  );
 }
 
-function Pizza({pizzaObj:{photoName, name, ingredients, price, soldOut}}: PizzaType){
-  return <li className={`pizza ${soldOut && "sold-out"}`}>
-    <img src={photoName} alt='pizza'></img>
-    <div>
-    <h3>{name}</h3>
-    <p>{ingredients}</p>
-    <span>{soldOut ? "SOLD OUT" : price}</span>
-    </div>
-  </li>
-}
-
-function Footer(){
+function Footer() {
   const hour = new Date().getHours();
   const openHr = 8;
   const closeHr = 22;
   const isOpen = hour >= openHr && hour <= closeHr;
   return (
-  <footer className='footer'>
-    {isOpen ? (
-      <Order closeHr={closeHr} openHr={openHr}/>
-    ) : (
-      <p>We're happy to welcome you between {openHr}:00 and {closeHr}:00.</p>
-    )}
-  </footer>
-  )
+    <footer className="footer">
+      {isOpen ? (
+        <Order closeHr={closeHr} openHr={openHr} />
+      ) : (
+        <p>
+          We're happy to welcome you between {openHr}:00 and {closeHr}:00.
+        </p>
+      )}
+    </footer>
+  );
 }
 
-function Order({closeHr, openHr}: {closeHr: number, openHr: number}){
+function Order({ closeHr, openHr }: { closeHr: number; openHr: number }) {
   return (
     <div className="order">
-        <p>
-          We're open from {openHr}:00 to {closeHr}:00. Come visit us or order
-        </p>
-        <button className="btn">Order</button>
-      </div>
-  )
+      <p>
+        We're open from {openHr}:00 to {closeHr}:00. Come visit us or order
+      </p>
+      <button className="btn">Order</button>
+    </div>
+  );
 }
 
-export default App
+export default App;
