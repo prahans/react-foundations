@@ -37,100 +37,28 @@
       "id": 98443197
     },
     {
-      "cityName": "Lourdoueix-Saint-Pierre",
-      "country": "France",
-      "emoji": "https://flagcdn.com/24x18/fr.png",
-      "date": "2026-07-01T15:25:16.717Z",
-      "notes": "adfg",
+      "cityName": "Mothihari",
+      "country": "India",
+      "emoji": "https://flagcdn.com/24x18/in.png",
+      "date": "2026-07-02T11:37:47.641Z",
+      "notes": "asdf",
       "position": {
-        "lat": "46.42271253466719",
-        "lng": "1.8896484375000002"
+        "lat": "26.632728662035912",
+        "lng": "84.94628906250001"
       },
       "id": 98443198
     },
     {
-      "cityName": "Narni",
-      "country": "Italy",
-      "emoji": "https://flagcdn.com/24x18/it.png",
-      "date": "2026-07-01T15:31:56.229Z",
-      "notes": "asdfg",
+      "cityName": "Neuvy-Saint-Sepulchre",
+      "country": "France",
+      "emoji": "https://flagcdn.com/24x18/fr.png",
+      "date": "2026-07-05T15:28:13.000Z",
+      "notes": "asdf",
       "position": {
-        "lat": "42.53689200787317",
-        "lng": "12.48046875"
+        "lat": "46.58906908309185",
+        "lng": "1.8457031250000002"
       },
       "id": 98443199
-    },
-    {
-      "cityName": "Narni",
-      "country": "Italy",
-      "emoji": "https://flagcdn.com/24x18/it.png",
-      "date": "2026-07-01T15:31:56.229Z",
-      "notes": "asdfg",
-      "position": {
-        "lat": "42.53689200787317",
-        "lng": "12.48046875"
-      },
-      "id": 98443200
-    },
-    {
-      "cityName": "In Salah",
-      "country": "Algeria",
-      "emoji": "https://flagcdn.com/24x18/dz.png",
-      "date": "2026-07-01T15:35:53.609Z",
-      "notes": "sadfg",
-      "position": {
-        "lat": "27.566721430409736",
-        "lng": "2.9003906250000004"
-      },
-      "id": 98443201
-    },
-    {
-      "cityName": "Dungarvan",
-      "country": "Ireland",
-      "emoji": "https://flagcdn.com/24x18/ie.png",
-      "date": "2026-07-01T15:36:28.097Z",
-      "notes": "wadrt",
-      "position": {
-        "lat": "52.214338608258224",
-        "lng": "-7.734375000000001"
-      },
-      "id": 98443202
-    },
-    {
-      "cityName": "Hol",
-      "country": "Norway",
-      "emoji": "https://flagcdn.com/24x18/no.png",
-      "date": "2026-07-01T15:38:37.489Z",
-      "notes": "asdf",
-      "position": {
-        "lat": "60.58696734225869",
-        "lng": "8.173828125000002"
-      },
-      "id": 98443203
-    },
-    {
-      "cityName": "Asahreppur",
-      "country": "Iceland",
-      "emoji": "https://flagcdn.com/24x18/is.png",
-      "date": "2026-07-01T15:40:00.078Z",
-      "notes": "asdf",
-      "position": {
-        "lat": "64.69910544204765",
-        "lng": "-18.281250000000004"
-      },
-      "id": 98443204
-    },
-    {
-      "cityName": "Skeiða- og Gnupverjahreppur",
-      "country": "Iceland",
-      "emoji": "https://flagcdn.com/24x18/is.png",
-      "date": "2026-07-01T15:40:10.559Z",
-      "notes": "asdf",
-      "position": {
-        "lat": "64.35893097894458",
-        "lng": "-19.16015625"
-      },
-      "id": 98443205
     }
   ]
 }

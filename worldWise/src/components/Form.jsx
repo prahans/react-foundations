@@ -24,7 +24,7 @@ function Form() {
   const [date, setDate] = useState(new Date());
   const [notes, setNotes] = useState("");
   const [isLoadingGeocoding, setIsLoadingGeocoding] = useState(false);
-  const [emoji, setEmoji] = useState("");
+  const [emoji, setEmoji] = useState(null);
   const [geocodingError, setGeocodingError] = useState("");
   const {createCity, isLoading} = useCities();
   const navigate = useNavigate();
@@ -42,7 +42,7 @@ function Form() {
 
         setCityName(data.city || data.locality || "");
         setCountry(data.countryName);
-        setEmoji(`https://flagcdn.com/24x18/${data.countryCode.toLowerCase()}.png`);
+        setEmoji(`https://flagcdn.com/24x18/${data.countryCode.toLowerCase()}.png` );
       }catch (err){
         setGeocodingError(err.message);
       }  
