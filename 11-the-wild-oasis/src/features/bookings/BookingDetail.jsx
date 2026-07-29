@@ -14,6 +14,7 @@ import { useBooking } from "./useBooking";
 import { useNavigate } from "react-router-dom";
 import { HiArrowUpOnSquare } from "react-icons/hi2";
 import { useCheckout } from "../check-in-out/useCheckOut";
+import { useDeleteBooking } from "./useDeleteBooking";
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -24,6 +25,7 @@ const HeadingGroup = styled.div`
 function BookingDetail() {
   const { booking, isLoading } = useBooking();
   const { checkout, isCheckingOut } = useCheckout();
+  const { isDeletingBooking, deleteTheBooking } = useDeleteBooking();
   const navigate = useNavigate();
   const moveBack = useMoveBack();
   if (isLoading) return <Spinner />;
@@ -63,6 +65,17 @@ function BookingDetail() {
             Check out
           </Button>
         )}
+        <Button
+          variation="danger"
+          onClick={() => {
+            deleteTheBooking(bookingId);
+            navigate(-1);
+          }}
+          disabled={isDeletingBooking}
+        >
+          Delete booking
+        </Button>
+
         <Button variation="secondary" onClick={moveBack}>
           Back
         </Button>
