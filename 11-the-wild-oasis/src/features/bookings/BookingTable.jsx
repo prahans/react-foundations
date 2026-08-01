@@ -7,7 +7,7 @@ import BookingRow from "./BookingRow";
 import Pagination from "../../ui/Pagination";
 import Button from "../../ui/Button";
 import Modal from "../../ui/Modal";
-import CreateCabinForm from "../cabins/CreateCabinForm";
+import CreateBookingForm from "./CreateBookingForm";
 
 function BookingTable() {
   const { bookings, isLoading, count } = useBookings();
@@ -45,7 +45,7 @@ function BookingTable() {
                 <Button>Add new booking</Button>
               </Modal.Open>
               <Modal.Window name="booking-form">
-                <CreateCabinForm />
+                <CreateBookingForm />
               </Modal.Window>
             </Modal>
           </div>
