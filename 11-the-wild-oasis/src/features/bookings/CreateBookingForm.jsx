@@ -2,24 +2,47 @@ import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
-import Textarea from "../../ui/Textarea";
-import SelectElement from "../../ui/SelectElement";
 import { Radio, RadioGroup, RadioOption } from "../../ui/RadioElement";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { useState } from "react";
+import { useCabins } from "../cabins/useCabins";
+import SelectElement from "../../ui/SelectElement";
 
 function CreateBookingForm({ onCloseModal }) {
+  const { cabins, isLoading } = useCabins();
+  const defaultEndDate = new Date();
+  defaultEndDate.setDate(defaultEndDate.getDate() + 2);
+
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(defaultEndDate);
   return (
-    <Form>
+    <Form type={onCloseModal ? "model" : "regular"}>
       <FormRow label="Cabin name">
-        <Input type="text" id="name" />
+        <SelectElement>
+          {cabins.map((cabin) => (
+            <option key={cabin.id}>{cabin.name}</option>
+          ))}
+        </SelectElement>
       </FormRow>
       <FormRow label="Select Existing Guest">
         <Input type="text" id="maxCapacity" />
       </FormRow>
-      <FormRow label="Arrive date">
-        <Input type="number" id="regularPrice" />
+      <FormRow label="Start date">
+        <DatePicker
+          id="date"
+          selected={startDate}
+          onChange={(date) => setStartDate(date)}
+          customInput={<Input />}
+        />
       </FormRow>
-      <FormRow label="departure date">
-        <Input type="number" id="regularPrice" />
+      <FormRow label="End date">
+        <DatePicker
+          id="date"
+          selected={endDate}
+          onChange={(date) => setEndDate(date)}
+          customInput={<Input />}
+        />
       </FormRow>
       <FormRow label="Status">
         <RadioGroup>
@@ -29,6 +52,7 @@ function CreateBookingForm({ onCloseModal }) {
               id="unconfirmed"
               name="status"
               value="unconfirmed"
+              defaultChecked
             />
             unconfirmed
           </RadioOption>
@@ -72,7 +96,7 @@ function CreateBookingForm({ onCloseModal }) {
         </RadioGroup>
       </FormRow>
       <FormRow label="Amount">
-        <input type="number" id="description" />
+        <Input type="number" id="description" />
       </FormRow>
 
       <FormRow>
@@ -85,7 +109,6 @@ function CreateBookingForm({ onCloseModal }) {
           Cancel
         </Button>
         <Button>Create new booking</Button>
-        <Button size="small">Create new guest</Button>
       </FormRow>
     </Form>
   );

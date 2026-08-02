@@ -14,7 +14,6 @@ import Spinner from "./Spinner";
 import { useCities } from "../contexts/CitiesProvider";
 import { useNavigate } from "react-router-dom";
 
-
 const BASE_URL = "https://api.bigdatacloud.net/data/reverse-geocode-client";
 
 function Form() {
@@ -26,34 +25,43 @@ function Form() {
   const [isLoadingGeocoding, setIsLoadingGeocoding] = useState(false);
   const [emoji, setEmoji] = useState(null);
   const [geocodingError, setGeocodingError] = useState("");
-  const {createCity, isLoading} = useCities();
+  const { createCity, isLoading } = useCities();
   const navigate = useNavigate();
 
-  useEffect(function(){
-    if(!lat && !lng) return;
-    async function fetchCityData() {
-      try{
-        setGeocodingError("");
-        setIsLoadingGeocoding(true);
-        const res = await fetch(`${BASE_URL}?latitude=${lat}&longitude=${lng}`);
-        const data = await res.json();
+  useEffect(
+    function () {
+      if (!lat && !lng) return;
+      async function fetchCityData() {
+        try {
+          setGeocodingError("");
+          setIsLoadingGeocoding(true);
+          const res = await fetch(
+            `${BASE_URL}?latitude=${lat}&longitude=${lng}`,
+          );
+          const data = await res.json();
 
-        if(!data.countryCode) throw new Error("That doesn't seem to be a city. Click somewhere else 😊")
+          if (!data.countryCode)
+            throw new Error(
+              "That doesn't seem to be a city. Click somewhere else 😊",
+            );
 
-        setCityName(data.city || data.locality || "");
-        setCountry(data.countryName);
-        setEmoji(`https://flagcdn.com/24x18/${data.countryCode.toLowerCase()}.png` );
-      }catch (err){
-        setGeocodingError(err.message);
-      }  
-      finally{
-        setIsLoadingGeocoding(false);
+          setCityName(data.city || data.locality || "");
+          setCountry(data.countryName);
+          setEmoji(
+            `https://flagcdn.com/24x18/${data.countryCode.toLowerCase()}.png`,
+          );
+        } catch (err) {
+          setGeocodingError(err.message);
+        } finally {
+          setIsLoadingGeocoding(false);
+        }
       }
-    }
-    fetchCityData();
-  }, [lat, lng]);
+      fetchCityData();
+    },
+    [lat, lng],
+  );
 
-  async function handleSubmit(e){
+  async function handleSubmit(e) {
     e.preventDefault();
     const newCity = {
       cityName,
@@ -62,20 +70,24 @@ function Form() {
       date,
       notes,
       position: {
-         lat,
-         lng
-      }
-  }
-  await createCity(newCity);
-  navigate("/app/cities");
-}
+        lat,
+        lng,
+      },
+    };
 
-  if(!lat && !lng) return <Message message='Start by clicking on the map' />
-  if(isLoadingGeocoding) return <Spinner />
-  if(geocodingError) return <Message message={geocodingError}/>
+    await createCity(newCity);
+    navigate("/app/cities");
+  }
+
+  if (!lat && !lng) return <Message message="Start by clicking on the map" />;
+  if (isLoadingGeocoding) return <Spinner />;
+  if (geocodingError) return <Message message={geocodingError} />;
 
   return (
-    <form className={`${styles.form} ${isLoading ? styles.loading : ''} `} onSubmit={handleSubmit}>  
+    <form
+      className={`${styles.form} ${isLoading ? styles.loading : ""} `}
+      onSubmit={handleSubmit}
+    >
       <div className={styles.row}>
         <label htmlFor="cityName">City name</label>
         <input
@@ -83,7 +95,9 @@ function Form() {
           onChange={(e) => setCityName(e.target.value)}
           value={cityName}
         />
-        <span className={styles.flag}><img src={emoji} alt="flag"/></span>
+        <span className={styles.flag}>
+          <img src={emoji} alt="flag" />
+        </span>
       </div>
 
       <div className={styles.row}>
@@ -93,7 +107,11 @@ function Form() {
           onChange={(e) => setDate(e.target.value)}
           value={date}
         /> */}
-        <DatePicker id="date" selected={date} onChange={(date) => setDate(date)}/>
+        <DatePicker
+          id="date"
+          selected={date}
+          onChange={(date) => setDate(date)}
+        />
       </div>
 
       <div className={styles.row}>
