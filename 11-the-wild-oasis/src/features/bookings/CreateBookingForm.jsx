@@ -6,18 +6,20 @@ import { Radio, RadioGroup, RadioOption } from "../../ui/RadioElement";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useState } from "react";
-import { useCabins } from "../cabins/useCabins";
 import SelectElement from "../../ui/SelectElement";
 import Spinner from "../../ui/Spinner";
 import { useGuests } from "./useGuests";
 import { useAvailableCabins } from "./useAvailableCabins";
+import { useForm } from "react-hook-form";
 
 const defaultEndDate = new Date();
 defaultEndDate.setDate(defaultEndDate.getDate() + 2);
 
 function CreateBookingForm({ onCloseModal }) {
+  const { register, handleSubmit, reset, getValues, formState } = useForm();
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(defaultEndDate);
+  const [numGuests, setNumGuests] = useState(1);
 
   const start = startDate.toISOString().split("T")[0];
   const end = endDate.toISOString().split("T")[0];
@@ -26,18 +28,31 @@ function CreateBookingForm({ onCloseModal }) {
   const { guests, isLoading: isLoadingGuests } = useGuests();
 
   const { availableCabins, isLoading: isLoadingAvailableCabins } =
-    useAvailableCabins(start, end);
+    useAvailableCabins(start, end, numGuests);
 
   if (isLoadingAvailableCabins || isLoadingGuests) return <Spinner />;
 
   return (
     <Form type={onCloseModal ? "model" : "regular"}>
       <FormRow label="Select Existing Guest">
-        <SelectElement>
+        <SelectElement
+          {...register("guest", { required: "This field is required" })}
+        >
           {guests?.map((guest) => (
             <option key={guest.id}>{guest.fullName}</option>
           ))}
         </SelectElement>
+      </FormRow>
+
+      <FormRow label="Number of Guests (max 10)">
+        <Input
+          type="number"
+          id="numGuests"
+          value={numGuests}
+          onChange={(e) => Number(setNumGuests(e.target.value))}
+          min="1"
+          max="10"
+        />
       </FormRow>
 
       <FormRow label="Start date">
@@ -66,7 +81,7 @@ function CreateBookingForm({ onCloseModal }) {
         </SelectElement>
       </FormRow>
 
-      <FormRow label="Has breakfast">
+      <FormRow label="Breakfast included">
         <RadioGroup>
           <RadioOption>
             <Radio type="radio" id="yes" name="hasBreakfast" value="true" />
@@ -74,19 +89,24 @@ function CreateBookingForm({ onCloseModal }) {
           </RadioOption>
 
           <RadioOption>
-            <Radio
-              type="radio"
-              id="no"
-              name="hasBreakfast"
-              value="false"
-              defaultChecked
-            />
+            <Radio type="radio" id="no" name="hasBreakfast" value="false" />
             No
           </RadioOption>
         </RadioGroup>
       </FormRow>
-      <FormRow label="Amount">
-        <Input type="number" id="description" />
+
+      <FormRow label="Payment confirmed">
+        <RadioGroup>
+          <RadioOption>
+            <Radio type="radio" id="yes" name="isPaid" value="true" />
+            Yes
+          </RadioOption>
+
+          <RadioOption>
+            <Radio type="radio" id="no" name="isPaid" value="false" />
+            No
+          </RadioOption>
+        </RadioGroup>
       </FormRow>
 
       <FormRow>

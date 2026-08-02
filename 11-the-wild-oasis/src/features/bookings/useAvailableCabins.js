@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { getAvailableCabins } from "../../services/apiBookings";
 
-export function useAvailableCabins(startDate, endDate) {
+export function useAvailableCabins(startDate, endDate, numGuests) {
   const {
     data: availableCabins,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["availableCabins", startDate, endDate],
-    queryFn: () => getAvailableCabins(startDate, endDate),
+    queryKey: ["availableCabins", startDate, endDate, numGuests],
+    queryFn: () => getAvailableCabins(startDate, endDate, numGuests),
     enabled: !!startDate && !!endDate,
   });
 

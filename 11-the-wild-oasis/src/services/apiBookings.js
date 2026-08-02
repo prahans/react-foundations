@@ -130,7 +130,7 @@ export async function deleteBooking(id) {
   return data;
 }
 
-export async function getAvailableCabins(startDate, endDate) {
+export async function getAvailableCabins(startDate, endDate, numGuests) {
   const { data: cabins, error: cabinsError } = await supabase
     .from("cabins")
     .select("*");
@@ -147,5 +147,8 @@ export async function getAvailableCabins(startDate, endDate) {
 
   const unavailableCabinIds = bookings.map((booking) => booking.cabinId);
 
-  return cabins.filter((cabin) => !unavailableCabinIds.includes(cabin.id));
+  return cabins.filter(
+    (cabin) =>
+      !unavailableCabinIds.includes(cabin.id) && cabin.maxCapacity >= numGuests,
+  );
 }
