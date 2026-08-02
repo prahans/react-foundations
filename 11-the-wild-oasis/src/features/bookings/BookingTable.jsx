@@ -5,9 +5,6 @@ import { useBookings } from "./useBookings";
 import Spinner from "../../ui/Spinner";
 import BookingRow from "./BookingRow";
 import Pagination from "../../ui/Pagination";
-import Button from "../../ui/Button";
-import Modal from "../../ui/Modal";
-import CreateBookingForm from "./CreateBookingForm";
 
 function BookingTable() {
   const { bookings, isLoading, count } = useBookings();
@@ -38,18 +35,6 @@ function BookingTable() {
             <Pagination count={count} />
           </Table.Footer>
         </Table>
-        <div>
-          <div>
-            <Modal>
-              <Modal.Open opens="booking-form">
-                <Button>Add new booking</Button>
-              </Modal.Open>
-              <Modal.Window name="booking-form">
-                <CreateBookingForm />
-              </Modal.Window>
-            </Modal>
-          </div>
-        </div>
       </Menus>
     </>
   );

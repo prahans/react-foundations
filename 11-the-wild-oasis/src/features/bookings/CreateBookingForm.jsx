@@ -2,23 +2,29 @@ import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
-import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 
-function CreateBookingForm() {
+function CreateBookingForm({ onCloseModal }) {
   return (
     <Form>
       <FormRow label="Cabin name">
         <Input type="text" id="name" />
       </FormRow>
-      <FormRow label="Guest full name">
+      <FormRow label="Select Existing Guest">
         <Input type="text" id="maxCapacity" />
       </FormRow>
-      <FormRow label="Start date & end date">
+      <FormRow label="Arrive date">
+        <Input type="number" id="regularPrice" />
+      </FormRow>
+      <FormRow label="departure date">
         <Input type="number" id="regularPrice" />
       </FormRow>
       <FormRow label="Status">
-        <Input type="number" id="discount" />
+        <select>
+          <option value="unconfirmed">unconfirmed</option>
+          <option value="checked-in">checked-in</option>
+          <option value="checked-out">checked-out</option>
+        </select>
       </FormRow>
       <FormRow label="Amount">
         <Textarea type="number" id="description" />
@@ -34,6 +40,7 @@ function CreateBookingForm() {
           Cancel
         </Button>
         <Button>Create new booking</Button>
+        <Button size="small">Create new guest</Button>
       </FormRow>
     </Form>
   );
