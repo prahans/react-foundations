@@ -8,14 +8,20 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useState } from "react";
 import { useCabins } from "../cabins/useCabins";
 import SelectElement from "../../ui/SelectElement";
+import Spinner from "../../ui/Spinner";
+import { useGuests } from "./useGuests";
+
+const defaultEndDate = new Date();
+defaultEndDate.setDate(defaultEndDate.getDate() + 2);
 
 function CreateBookingForm({ onCloseModal }) {
-  const { cabins, isLoading } = useCabins();
-  const defaultEndDate = new Date();
-  defaultEndDate.setDate(defaultEndDate.getDate() + 2);
-
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(defaultEndDate);
+  const { cabins, isLoading: isLoadingCabins } = useCabins();
+  const { guests, isLoading: isLoadingGuests } = useGuests();
+
+  if (isLoadingCabins || isLoadingGuests) return <Spinner />;
+
   return (
     <Form type={onCloseModal ? "model" : "regular"}>
       <FormRow label="Cabin name">
@@ -25,8 +31,13 @@ function CreateBookingForm({ onCloseModal }) {
           ))}
         </SelectElement>
       </FormRow>
+
       <FormRow label="Select Existing Guest">
-        <Input type="text" id="maxCapacity" />
+        <SelectElement>
+          {guests.map((guest) => (
+            <option key={guest.id}>{guest.fullName}</option>
+          ))}
+        </SelectElement>
       </FormRow>
       <FormRow label="Start date">
         <DatePicker
