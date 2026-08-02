@@ -4,6 +4,7 @@ import Form from "../../ui/Form";
 import Button from "../../ui/Button";
 import Textarea from "../../ui/Textarea";
 import SelectElement from "../../ui/SelectElement";
+import { Radio, RadioGroup, RadioOption } from "../../ui/RadioElement";
 
 function CreateBookingForm({ onCloseModal }) {
   return (
@@ -21,14 +22,57 @@ function CreateBookingForm({ onCloseModal }) {
         <Input type="number" id="regularPrice" />
       </FormRow>
       <FormRow label="Status">
-        <SelectElement>
-          <option value="unconfirmed">unconfirmed</option>
-          <option value="checked-in">checked-in</option>
-          <option value="checked-out">checked-out</option>
-        </SelectElement>
+        <RadioGroup>
+          <RadioOption>
+            <Radio
+              type="radio"
+              id="unconfirmed"
+              name="status"
+              value="unconfirmed"
+            />
+            unconfirmed
+          </RadioOption>
+          <RadioOption>
+            <Radio
+              type="radio"
+              id="checked-in"
+              name="status"
+              value="checked-in"
+            />
+            checkedIn
+          </RadioOption>
+          <RadioOption>
+            <Radio
+              type="radio"
+              id="checked-out"
+              name="status"
+              value="checked-out"
+            />
+            checkedOut
+          </RadioOption>
+        </RadioGroup>
+      </FormRow>
+      <FormRow label="Has breakfast">
+        <RadioGroup>
+          <RadioOption>
+            <Radio type="radio" id="yes" name="hasBreakfast" value="true" />
+            Yes
+          </RadioOption>
+
+          <RadioOption>
+            <Radio
+              type="radio"
+              id="no"
+              name="hasBreakfast"
+              value="false"
+              defaultChecked
+            />
+            No
+          </RadioOption>
+        </RadioGroup>
       </FormRow>
       <FormRow label="Amount">
-        <Textarea type="number" id="description" />
+        <input type="number" id="description" />
       </FormRow>
 
       <FormRow>
