@@ -3,6 +3,7 @@ import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
 import Textarea from "../../ui/Textarea";
+import SelectElement from "../../ui/SelectElement";
 
 function CreateBookingForm({ onCloseModal }) {
   return (
@@ -20,11 +21,11 @@ function CreateBookingForm({ onCloseModal }) {
         <Input type="number" id="regularPrice" />
       </FormRow>
       <FormRow label="Status">
-        <select>
+        <SelectElement>
           <option value="unconfirmed">unconfirmed</option>
           <option value="checked-in">checked-in</option>
           <option value="checked-out">checked-out</option>
-        </select>
+        </SelectElement>
       </FormRow>
       <FormRow label="Amount">
         <Textarea type="number" id="description" />
