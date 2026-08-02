@@ -129,3 +129,23 @@ export async function deleteBooking(id) {
   }
   return data;
 }
+
+export async function getAvailableCabins(startDate, endDate) {
+  const { data: cabins, error: cabinsError } = await supabase
+    .from("cabins")
+    .select("*");
+
+  if (cabinsError) throw new Error("Cabins could not be loaded");
+
+  const { data: bookings, error: bookingsError } = await supabase
+    .from("bookings")
+    .select("cabinId")
+    .lt("startDate", endDate)
+    .gt("endDate", startDate);
+
+  if (bookingsError) throw new Error("Bookings could not be loaded");
+
+  const unavailableCabinIds = bookings.map((booking) => booking.cabinId);
+
+  return cabins.filter((cabin) => !unavailableCabinIds.includes(cabin.id));
+}

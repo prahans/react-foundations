@@ -10,6 +10,7 @@ import { useCabins } from "../cabins/useCabins";
 import SelectElement from "../../ui/SelectElement";
 import Spinner from "../../ui/Spinner";
 import { useGuests } from "./useGuests";
+import { useAvailableCabins } from "./useAvailableCabins";
 
 const defaultEndDate = new Date();
 defaultEndDate.setDate(defaultEndDate.getDate() + 2);
@@ -17,28 +18,28 @@ defaultEndDate.setDate(defaultEndDate.getDate() + 2);
 function CreateBookingForm({ onCloseModal }) {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(defaultEndDate);
-  const { cabins, isLoading: isLoadingCabins } = useCabins();
+
+  const start = startDate.toISOString().split("T")[0];
+  const end = endDate.toISOString().split("T")[0];
+
+  // const { cabins, isLoading: isLoadingCabins } = useCabins();
   const { guests, isLoading: isLoadingGuests } = useGuests();
 
-  if (isLoadingCabins || isLoadingGuests) return <Spinner />;
+  const { availableCabins, isLoading: isLoadingAvailableCabins } =
+    useAvailableCabins(start, end);
+
+  if (isLoadingAvailableCabins || isLoadingGuests) return <Spinner />;
 
   return (
     <Form type={onCloseModal ? "model" : "regular"}>
-      <FormRow label="Cabin name">
-        <SelectElement>
-          {cabins.map((cabin) => (
-            <option key={cabin.id}>{cabin.name}</option>
-          ))}
-        </SelectElement>
-      </FormRow>
-
       <FormRow label="Select Existing Guest">
         <SelectElement>
-          {guests.map((guest) => (
+          {guests?.map((guest) => (
             <option key={guest.id}>{guest.fullName}</option>
           ))}
         </SelectElement>
       </FormRow>
+
       <FormRow label="Start date">
         <DatePicker
           id="date"
@@ -47,6 +48,7 @@ function CreateBookingForm({ onCloseModal }) {
           customInput={<Input />}
         />
       </FormRow>
+
       <FormRow label="End date">
         <DatePicker
           id="date"
@@ -55,6 +57,15 @@ function CreateBookingForm({ onCloseModal }) {
           customInput={<Input />}
         />
       </FormRow>
+
+      <FormRow label="Cabin name">
+        <SelectElement>
+          {availableCabins?.map((availableCabin) => (
+            <option key={availableCabin.id}>{availableCabin.name}</option>
+          ))}
+        </SelectElement>
+      </FormRow>
+
       <FormRow label="Status">
         <RadioGroup>
           <RadioOption>
