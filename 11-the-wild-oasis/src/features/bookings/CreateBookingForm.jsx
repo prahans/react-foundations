@@ -66,38 +66,6 @@ function CreateBookingForm({ onCloseModal }) {
         </SelectElement>
       </FormRow>
 
-      <FormRow label="Status">
-        <RadioGroup>
-          <RadioOption>
-            <Radio
-              type="radio"
-              id="unconfirmed"
-              name="status"
-              value="unconfirmed"
-              defaultChecked
-            />
-            unconfirmed
-          </RadioOption>
-          <RadioOption>
-            <Radio
-              type="radio"
-              id="checked-in"
-              name="status"
-              value="checked-in"
-            />
-            checkedIn
-          </RadioOption>
-          <RadioOption>
-            <Radio
-              type="radio"
-              id="checked-out"
-              name="status"
-              value="checked-out"
-            />
-            checkedOut
-          </RadioOption>
-        </RadioGroup>
-      </FormRow>
       <FormRow label="Has breakfast">
         <RadioGroup>
           <RadioOption>
