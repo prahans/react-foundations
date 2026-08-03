@@ -5,78 +5,143 @@ import Button from "../../ui/Button";
 import { Radio, RadioGroup, RadioOption } from "../../ui/RadioElement";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useState } from "react";
 import SelectElement from "../../ui/SelectElement";
 import Spinner from "../../ui/Spinner";
 import { useGuests } from "./useGuests";
 import { useAvailableCabins } from "./useAvailableCabins";
-import { useForm } from "react-hook-form";
+import { useDebounce } from "../../hooks/useDebounce";
 
-const defaultEndDate = new Date();
-defaultEndDate.setDate(defaultEndDate.getDate() + 2);
+import { Controller, useForm } from "react-hook-form";
+import { addDays } from "date-fns";
+import { useCreateBooking } from "./useCreateBooking";
+
+const defaultStartDate = new Date();
+const defaultEndDate = addDays(new Date(), 2);
 
 function CreateBookingForm({ onCloseModal }) {
-  const { register, handleSubmit, reset, getValues, formState } = useForm();
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(defaultEndDate);
-  const [numGuests, setNumGuests] = useState(1);
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      guestId: "",
+      numGuests: 1,
+      startDate: defaultStartDate,
+      endDate: defaultEndDate,
+      cabinId: "",
+      hasBreakfast: "false",
+      isPaid: "false",
+    },
+  });
 
-  const start = startDate.toISOString().split("T")[0];
-  const end = endDate.toISOString().split("T")[0];
+  // Watch form values
+  const startDate = watch("startDate");
+  const endDate = watch("endDate");
+  const numGuests = watch("numGuests");
 
-  // const { cabins, isLoading: isLoadingCabins } = useCabins();
   const { guests, isLoading: isLoadingGuests } = useGuests();
+  const { createNewBooking, isCreating } = useCreateBooking();
 
-  const { availableCabins, isLoading: isLoadingAvailableCabins } =
-    useAvailableCabins(start, end, numGuests);
+  const { availableCabins, isLoading: isLoadingCabins } = useAvailableCabins(
+    useDebounce(startDate, 500),
+    useDebounce(endDate, 500),
+    useDebounce(numGuests, 500),
+  );
 
-  if (isLoadingAvailableCabins || isLoadingGuests) return <Spinner />;
+  const isWorking = isLoadingGuests || isLoadingCabins || isCreating;
+
+  if (isWorking) return <Spinner />;
+
+  function onSubmit(data) {
+    createNewBooking(data, {
+      onSuccess: () => {
+        reset();
+        onCloseModal?.();
+      },
+    });
+  }
 
   return (
-    <Form type={onCloseModal ? "model" : "regular"}>
+    <Form
+      type={onCloseModal ? "modal" : "regular"}
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <FormRow label="Select Existing Guest">
         <SelectElement
-          {...register("guest", { required: "This field is required" })}
+          {...register("guestId", {
+            required: "This field is required",
+          })}
         >
+          <option value="">Select guest</option>
+
           {guests?.map((guest) => (
-            <option key={guest.id}>{guest.fullName}</option>
+            <option key={guest.id} value={guest.id}>
+              {guest.fullName}
+            </option>
           ))}
         </SelectElement>
       </FormRow>
 
-      <FormRow label="Number of Guests (max 10)">
+      <FormRow label="Number of Guests">
         <Input
           type="number"
-          id="numGuests"
-          value={numGuests}
-          onChange={(e) => Number(setNumGuests(e.target.value))}
           min="1"
           max="10"
+          {...register("numGuests", {
+            required: "This field is required",
+            valueAsNumber: true,
+            min: 1,
+            max: 10,
+          })}
         />
       </FormRow>
 
       <FormRow label="Start date">
-        <DatePicker
-          id="date"
-          selected={startDate}
-          onChange={(date) => setStartDate(date)}
-          customInput={<Input />}
+        <Controller
+          name="startDate"
+          control={control}
+          rules={{ required: "This field is required" }}
+          render={({ field }) => (
+            <DatePicker
+              selected={field.value}
+              onChange={field.onChange}
+              customInput={<Input />}
+            />
+          )}
         />
       </FormRow>
 
       <FormRow label="End date">
-        <DatePicker
-          id="date"
-          selected={endDate}
-          onChange={(date) => setEndDate(date)}
-          customInput={<Input />}
+        <Controller
+          name="endDate"
+          control={control}
+          rules={{ required: "This field is required" }}
+          render={({ field }) => (
+            <DatePicker
+              selected={field.value}
+              onChange={field.onChange}
+              customInput={<Input />}
+            />
+          )}
         />
       </FormRow>
 
-      <FormRow label="Cabin name">
-        <SelectElement>
-          {availableCabins?.map((availableCabin) => (
-            <option key={availableCabin.id}>{availableCabin.name}</option>
+      <FormRow label="Cabin">
+        <SelectElement
+          {...register("cabinId", {
+            required: "This field is required",
+          })}
+        >
+          <option value="">Select cabin</option>
+
+          {availableCabins?.map((cabin) => (
+            <option key={cabin.id} value={cabin.id}>
+              {cabin.name}
+            </option>
           ))}
         </SelectElement>
       </FormRow>
@@ -84,12 +149,12 @@ function CreateBookingForm({ onCloseModal }) {
       <FormRow label="Breakfast included">
         <RadioGroup>
           <RadioOption>
-            <Radio type="radio" id="yes" name="hasBreakfast" value="true" />
+            <Radio type="radio" value="true" {...register("hasBreakfast")} />
             Yes
           </RadioOption>
 
           <RadioOption>
-            <Radio type="radio" id="no" name="hasBreakfast" value="false" />
+            <Radio type="radio" value="false" {...register("hasBreakfast")} />
             No
           </RadioOption>
         </RadioGroup>
@@ -98,27 +163,30 @@ function CreateBookingForm({ onCloseModal }) {
       <FormRow label="Payment confirmed">
         <RadioGroup>
           <RadioOption>
-            <Radio type="radio" id="yes" name="isPaid" value="true" />
+            <Radio type="radio" value="true" {...register("isPaid")} />
             Yes
           </RadioOption>
 
           <RadioOption>
-            <Radio type="radio" id="no" name="isPaid" value="false" />
+            <Radio type="radio" value="false" {...register("isPaid")} />
             No
           </RadioOption>
         </RadioGroup>
       </FormRow>
 
       <FormRow>
-        {/* type is an HTML attribute! */}
         <Button
           variation="secondary"
           type="reset"
-          onClick={() => onCloseModal?.()}
+          onClick={() => {
+            reset();
+            onCloseModal?.();
+          }}
         >
           Cancel
         </Button>
-        <Button>Create new booking</Button>
+
+        <Button disabled={isWorking}>Create new booking</Button>
       </FormRow>
     </Form>
   );
